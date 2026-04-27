@@ -28,6 +28,7 @@ Execute these steps in order. If any step fails, stop, print a **plain** (not in
 
 - Work in the current working directory. Confirm it is a git repo root.
 - No modified or staged **tracked** files. Check with `git status --porcelain --untracked-files=no` — must be empty. Untracked files (scratch notes, test outputs, personal `.md` files) are ignored on purpose. If tracked files are dirty → refuse.
+- No open PR with the `yorick` label already exists on this repo. Check with `gh pr list --label yorick --state open --json number,url`. If one exists → refuse with: `Yorick PR already open: <url>`. One PR at a time.
 - Detect stack by counting **actual source files**, not marker files. Count (excluding `node_modules`, `.venv`, `venv`, `__pycache__`, `obj`, `bin`, `dist`, `build`, `*.Tests*`, `test_*`, `*_test.*`, `tests/`):
   - C#: `*.cs` files not under `obj`/`bin`.
   - Python: `*.py` files not under `.venv`/`venv`.
@@ -111,6 +112,7 @@ This comment is **not** in character. It is for human readers unfamiliar with Yo
 - Never delete branches.
 - Never merge.
 - Never commit to `main` / `master` / the default branch directly.
+- Never open a second PR while one with the `yorick` label is still open.
 - If the worktree produces no PR, discard it.
 
 ## Return value
