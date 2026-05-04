@@ -1,0 +1,30 @@
+{
+  "name": "yorick",
+  "owner": {
+    "name": "João António",
+    "url": "https://github.com/JoaoAnt42"
+  },
+  "metadata": {
+    "description": "Yorick — standalone CRAP-reducing agent for Claude Code",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "yorick",
+      "source": "./",
+      "description": "Finds the highest-CRAP function in a repo, refactors or adds characterization tests, and opens a small focused PR. Supports C#, Python, TypeScript, and JavaScript (incl. Google Apps Script).",
+      "version": "0.1.0",
+      "author": {
+        "name": "João António"
+      },
+      "category": "code-quality",
+      "keywords": [
+        "crap-score",
+        "refactoring",
+        "complexity",
+        "test-coverage",
+        "code-quality"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "yorick",
+  "description": "Standalone CRAP-reducing Claude Code agent. Finds the highest-CRAP function in a repo, refactors it or adds characterization tests, and opens a small focused PR.",
+  "version": "0.1.0",
+  "author": {
+    "name": "João António",
+    "url": "https://github.com/JoaoAnt42"
+  },
+  "homepage": "https://github.com/JoaoAnt42/yorick",
+  "repository": "https://github.com/JoaoAnt42/yorick",
+  "license": "MIT",
+  "keywords": [
+    "crap-score",
+    "refactoring",
+    "complexity",
+    "test-coverage",
+    "code-quality"
+  ],
+  "skills": "./skills/",
+  "commands": [
+    "./commands/yorick.md"
+  ]
+}
