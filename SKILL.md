@@ -33,22 +33,28 @@ Execute these steps in order. If any step fails, stop, print a **plain** (not in
   - C#: `*.cs` files not under `obj`/`bin`.
   - Python: `*.py` files not under `.venv`/`venv`.
   - TypeScript: `*.ts` + `*.tsx` files not under `node_modules`/`dist`.
+  - JavaScript: `*.js` + `*.mjs` + `*.cjs` + `*.gs` files not under `node_modules`/`dist`. (`.gs` = Google Apps Script.)
 - Pick the stack with the highest count. Require at least 10 source files for the winning stack — otherwise refuse ("no supported stack detected with enough source files").
-- A lone `package.json` without `.ts`/`.tsx` sources does **not** make it a TS repo (common in C#/Python repos with minor JS tooling).
-- Tie-break: prefer whichever has a project manifest at the repo root (`*.csproj` / `*.sln` → C#; `pyproject.toml` / `setup.py` → Python; `tsconfig.json` → TS).
-- Confirm the repo has a runnable test suite for that stack (pytest / vitest or jest / dotnet test).
-- Confirm CI is configured (`.github/workflows/`, `.gitlab-ci.yml`, `azure-pipelines.yml`, or equivalent).
+- A lone `package.json` without `.ts`/`.tsx`/`.js` sources does **not** make it a JS/TS repo (common in C#/Python repos with minor JS tooling).
+- TS vs JS tie-break: if both have ≥10 files, prefer TS. Otherwise the higher count wins.
+- Manifest tie-break (when counts tie): `*.csproj` / `*.sln` → C#; `pyproject.toml` / `setup.py` → Python; `tsconfig.json` → TS; `appsscript.json` → JS (GAS mode); `package.json` without `tsconfig.json` → JS.
+- Confirm the repo has a runnable test suite for that stack (pytest / vitest / jest / mocha / dotnet test). For JS in GAS mode, "test suite" = presence of any `Tests_*.gs` / `*_test.gs` / `*Test*.gs` (manual harness; see `scanners/javascript.md`).
+- Confirm CI is configured (`.github/workflows/`, `.gitlab-ci.yml`, `azure-pipelines.yml`, or equivalent). **Skipped for JS in GAS mode** — Apps Script repos rarely have CI.
 - Confirm required tooling is installed (see scanner doc for the detected stack). If missing → refuse and name the missing tool.
 
 ### 2. Shortlist candidates
 
-Do **not** compute CRAP across the whole repo. Follow the detected stack's scanner doc to pick ~`YORICK_MAX_CANDIDATES` (default 8) highest-looking candidates by a cheap heuristic (typically `function_LOC × max_nesting_depth`).
+Default behaviour: do **not** compute CRAP across the whole repo. Follow the detected stack's scanner doc to pick ~`YORICK_MAX_CANDIDATES` (default 8) highest-looking candidates by a cheap heuristic (typically `function_LOC × max_nesting_depth`).
 
-### 3. Compute CRAP on the shortlist
+**Small-repo full-scan mode** triggers automatically when the winning stack has ≤30 source files (post-exclusion), or when `YORICK_FULL_SCAN=true` is set. In this mode, skip the heuristic and treat *every* function in scope as a candidate. Coverage tooling still runs only on the in-scope source files (no test files), so the cost stays bounded.
+
+`YORICK_FULL_SCAN=false` forces the heuristic shortlist even on small repos.
+
+### 3. Compute CRAP on the candidates
 
 `CRAP(f) = comp(f)² × (1 − cov(f)/100)³ + comp(f)`
 
-Measure coverage **only** on the files containing shortlisted functions, via the scanner doc's recipe.
+Measure coverage **only** on the files containing candidate functions, via the scanner doc's recipe. (In full-scan mode, that is every in-scope source file.)
 
 ### 4. Decide
 
